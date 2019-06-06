@@ -30,7 +30,7 @@ class ScrollLabel: UIView {
     }
     
     private var animationOffset: CGFloat {
-        return abs(frame.width - expectedLabelSize.width)
+        return abs(expectedLabelSize.width)
     }
     
     private var animationDuration: CFTimeInterval {
@@ -53,7 +53,7 @@ class ScrollLabel: UIView {
             label.leadingAnchor.constraint(equalTo: self.leadingAnchor)
             ])
         
-        self.layer.contents = label.layer.contents
+//        self.layer.contents = label.layer.contents
     }
     
     override func layoutSubviews() {
@@ -61,24 +61,31 @@ class ScrollLabel: UIView {
         
         self.layer.masksToBounds = true
         
+        let replicatorLayer = CAReplicatorLayer()
+        replicatorLayer.instanceCount = 2
+        replicatorLayer.instanceTransform = CATransform3DMakeTranslation(expectedLabelSize.width, 0, 0)
+        replicatorLayer.addSublayer(label.layer)
+        layer.addSublayer(replicatorLayer)
+        
         if textNeedsScroll {
             let forthAnimation = CABasicAnimation(keyPath: "position.x")
             forthAnimation.byValue = -animationOffset
             forthAnimation.duration = animationDuration
             forthAnimation.fillMode = .forwards
-            forthAnimation.beginTime = animationDelay
-            
+//            forthAnimation.beginTime = animationDelay
+
             let backAnimation = CABasicAnimation(keyPath: "position.x")
             backAnimation.byValue = animationOffset
             backAnimation.duration = animationDuration
             backAnimation.fillMode = .forwards
             backAnimation.beginTime = animationDuration + 2 * animationDelay
-            
+
             let animations = CAAnimationGroup()
-            animations.animations = [forthAnimation, backAnimation]
-            animations.duration = 2 * animationDuration + 2 * animationDelay
+            animations.animations = [forthAnimation]
+//            animations.duration = 2 * animationDuration + 2 * animationDelay
+            animations.duration = animationDuration
             animations.repeatCount = Float.infinity
-            
+
             label.layer.add(animations, forKey: "scroll")
         }
     }
