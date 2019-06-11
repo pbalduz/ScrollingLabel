@@ -14,6 +14,7 @@ class ScrollLabel: UIView {
     
     var animationStyle: AnimationStyle = .continuous
     var animationDelay: CFTimeInterval = 1
+    var interLabelSpacing: CGFloat = 24
     var scrollSpeed: CFTimeInterval = 0.1 {
         didSet {
             scrollSpeed = min(1, max(0, scrollSpeed))
@@ -37,7 +38,7 @@ class ScrollLabel: UIView {
     private var animationOffset: CGFloat {
         switch animationStyle {
         case .continuous:
-            return abs(expectedLabelSize.width)
+            return abs(expectedLabelSize.width + interLabelSpacing)
         case .backForth:
             return abs(frame.width - expectedLabelSize.width)
         }
@@ -75,7 +76,7 @@ class ScrollLabel: UIView {
         self.layer.masksToBounds = true
         
         replicatorLayer.instanceCount = animationStyle.replicatorInstances
-        replicatorLayer.instanceTransform = CATransform3DMakeTranslation(expectedLabelSize.width, 0, 0)
+        replicatorLayer.instanceTransform = CATransform3DMakeTranslation(expectedLabelSize.width + interLabelSpacing, 0, 0)
         replicatorLayer.addSublayer(label.layer)
         layer.addSublayer(replicatorLayer)
         
